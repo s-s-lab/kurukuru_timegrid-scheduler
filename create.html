@@ -1,0 +1,16 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>作成 | TimeGrid Scheduler</title><link rel="stylesheet" href="css/style.css"></head>
+<body><header class="header"><div class="container nav"><a class="logo" href="index.html">TimeGrid Scheduler</a><div class="nav-links"><a href="index.html">トップ</a></div></div></header>
+<main class="container">
+  <div class="card"><h1>日程調整を作成する</h1><p class="help">候補日を追加すると、日付ごとのタイムラインが表示されます。セルをクリック・ドラッグして候補時間を選択してください。</p>
+    <div id="message"></div>
+    <form id="createForm">
+      <div class="grid two"><div class="form-row"><label for="title">イベント名</label><input id="title" required maxlength="100"></div><div class="form-row"><label for="organizerEmail">主催者メールアドレス</label><input id="organizerEmail" type="email" required></div></div>
+      <div class="form-row"><label for="description">説明・補足</label><textarea id="description"></textarea></div>
+      <div class="form-row"><label for="adminPassword">管理用パスワード</label><input id="adminPassword" type="password" required minlength="4"><p class="help">受付停止・削除・決定日時登録に使います。</p></div>
+      <div class="card"><h2>候補日</h2><div class="actions"><input id="dateInput" type="date" style="max-width:220px"><button class="btn secondary" type="button" id="addDateBtn">候補日を追加</button></div><div id="dateList" class="date-list"></div></div>
+      <div class="card"><h2>一括設定</h2><div class="actions"><select id="bulkStart" style="max-width:140px"></select><span>から</span><select id="bulkEnd" style="max-width:140px"></select><span>まで</span><button type="button" class="btn secondary" id="bulkApplyBtn">全日程に反映</button><button type="button" class="btn secondary" id="resetBtn">すべてリセット</button></div></div>
+      <div id="timelines" class="timeline-wrap"></div>
+      <div class="actions"><button class="btn" type="submit">登録してURLを発行する</button></div>
+    </form>
+  </div>
+</main><script src="js/config.js"></script><script src="js/api.js"></script><script src="js/create.js"></script></body></html>
