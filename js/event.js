@@ -1,4 +1,4 @@
-// event.js compact timeline version 2026-06-25-fix2-no-scroll
+// event.js compact timeline version 2026-06-25-fix3-timezone-selectable
 const EVENT_SLOTS = buildEventSlots('06:00', '24:00');
 let eventData = null;
 let currentMark = 'ok';
@@ -26,9 +26,22 @@ function normalizeDateValue(value) {
   if (value instanceof Date && !Number.isNaN(value.getTime())) {
     return `${value.getFullYear()}-${String(value.getMonth()+1).padStart(2,'0')}-${String(value.getDate()).padStart(2,'0')}`;
   }
-  const str = String(value);
+  const str = String(value).trim();
+
+  // Googleスプレッドシートの日付はGASから返すと
+  // 2026-06-24T15:00:00.000Z のようなUTC文字列になることがあります。
+  // この場合、先頭の 2026-06-24 をそのまま使うと日本時間で1日前にずれるため、
+  // Dateとして解釈してブラウザのローカル日付へ戻します。
+  if (/T.*Z$/.test(str)) {
+    const d = new Date(str);
+    if (!Number.isNaN(d.getTime())) {
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+  }
+
   const m = str.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
   if (m) return `${m[1]}-${String(Number(m[2])).padStart(2,'0')}-${String(Number(m[3])).padStart(2,'0')}`;
+
   const d = new Date(str);
   if (!Number.isNaN(d.getTime())) {
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -40,13 +53,26 @@ function normalizeTimeValue(value) {
   if (value instanceof Date && !Number.isNaN(value.getTime())) {
     return `${String(value.getHours()).padStart(2,'0')}:${String(value.getMinutes()).padStart(2,'0')}`;
   }
-  const str = String(value);
+  const str = String(value).trim();
+
+  // Googleスプレッドシートの時刻もGASから返すと
+  // 1899-12-30T01:00:00.000Z のようなUTC文字列になることがあります。
+  // これは日本時間では10:00のため、文字列中の 01:00 を拾わず、Dateとして解釈します。
+  if (/T.*Z$/.test(str)) {
+    const d = new Date(str);
+    if (!Number.isNaN(d.getTime())) {
+      return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    }
+  }
+
   const m = str.match(/(\d{1,2}):(\d{2})/);
   if (m) return `${String(Number(m[1])).padStart(2,'0')}:${m[2]}`;
   return str;
 }
 function timeToMin(t) {
-  const [h, m] = normalizeTimeValue(t).split(':').map(Number);
+  const normalized = normalizeTimeValue(t);
+  const [h, m] = normalized.split(':').map(Number);
+  if (!Number.isFinite(h) || !Number.isFinite(m)) return NaN;
   return h * 60 + m;
 }
 function normalizeEventData(data) {
@@ -79,10 +105,14 @@ function rebuildCandidateIndex() {
   candidateByDateSlot = new Map();
   eventData.candidates.forEach(c => {
     const start = timeToMin(c.startTime);
-    const end = timeToMin(c.endTime || c.startTime) || start + 30;
+    let end = timeToMin(c.endTime || c.startTime);
+    if (!Number.isFinite(start)) return;
+    if (!Number.isFinite(end) || end <= start) end = start + 30;
     EVENT_SLOTS.forEach(slot => {
       const s = timeToMin(slot);
-      if (s >= start && s < end) candidateByDateSlot.set(slotKey(c.date, slot), c);
+      if (Number.isFinite(s) && s >= start && s < end) {
+        candidateByDateSlot.set(slotKey(c.date, slot), c);
+      }
     });
   });
 }
