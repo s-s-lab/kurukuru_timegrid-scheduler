@@ -301,10 +301,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (responseId) {
         payload.responseId = responseId;
         await TimeGridApi.post('updateResponse', payload);
-        msg('回答を更新しました。主催者へ1分以内を目安に通知メールが送信されます。');
+        msg('回答を更新しました。通知メールは1分以内を目安に送信されます。');
       } else {
         await TimeGridApi.post('submitResponse', payload);
-        msg('回答を登録しました。主催者へ1分以内を目安に通知メールが送信されます。');
+        msg('回答を登録しました。通知メールは1分以内を目安に送信されます。');
       }
       closeModal();
       await load();
