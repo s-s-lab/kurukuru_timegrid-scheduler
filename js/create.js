@@ -4,6 +4,20 @@ const selectedSlots = new Map(); // date -> Set(slot)
 let dragMode = null;
 let calendarBase = firstDayOfMonth(new Date());
 
+const LOCAL_EVENTS_KEY = 'timegrid_created_events_v1';
+function saveCreatedEventToBrowser(eventInfo) {
+  try {
+    const raw = localStorage.getItem(LOCAL_EVENTS_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    const safeList = Array.isArray(list) ? list : [];
+    const next = [eventInfo, ...safeList.filter(item => item && item.eventId !== eventInfo.eventId)].slice(0, 30);
+    localStorage.setItem(LOCAL_EVENTS_KEY, JSON.stringify(next));
+  } catch (e) {
+    // localStorage が使えない場合は、イベント作成自体を止めない
+  }
+}
+
+
 function buildSlots(start, end) {
   const out = [];
   let [h, m] = start.split(':').map(Number);
@@ -152,7 +166,13 @@ document.addEventListener('DOMContentLoaded', () => {
       };
       const data = await TimeGridApi.post('createEvent', payload);
       const url = `${window.TIMEGRID_CONFIG.FRONTEND_BASE_URL}/event.html?id=${encodeURIComponent(data.eventId)}`;
-      msg(`作成しました。<br><input value="${url}" readonly onclick="this.select()"><p><a class="btn" href="${url}">回答画面を開く</a></p>`);
+      saveCreatedEventToBrowser({
+        eventId: data.eventId,
+        title: payload.title || '無題のイベント',
+        eventUrl: url,
+        createdAt: new Date().toISOString()
+      });
+      msg(`作成しました。<br><input value="${url}" readonly onclick="this.select()"><p><a class="btn" href="${url}">回答画面を開く</a> <a class="btn secondary" href="index.html">トップの履歴を見る</a></p>`);
     } catch (err) {
       msg(TimeGridApi.escapeHtml(err.message), 'error');
     } finally {
