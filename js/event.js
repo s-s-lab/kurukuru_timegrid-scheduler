@@ -1,4 +1,4 @@
-// event.js compact timeline version 2026-06-25-fix3-timezone-selectable
+// event.js compact timeline version 2026-06-25-fix4-async-notification
 const EVENT_SLOTS = buildEventSlots('06:00', '24:00');
 let eventData = null;
 let currentMark = 'ok';
@@ -281,6 +281,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('responseForm').onsubmit = async e => {
     e.preventDefault();
+    const form = e.currentTarget;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn ? submitBtn.textContent : '';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = '登録中...';
+    }
     try {
       const details = [...answerMap.entries()].filter(([,status]) => status).map(([candidateId, status]) => ({ candidateId, status }));
       const payload = {
@@ -294,15 +301,20 @@ document.addEventListener('DOMContentLoaded', () => {
       if (responseId) {
         payload.responseId = responseId;
         await TimeGridApi.post('updateResponse', payload);
-        msg('回答を更新しました。主催者へ通知しました。');
+        msg('回答を更新しました。通知メールは1分以内を目安に送信されます。');
       } else {
         await TimeGridApi.post('submitResponse', payload);
-        msg('回答を登録しました。主催者へ通知しました。');
+        msg('回答を登録しました。通知メールは1分以内を目安に送信されます。');
       }
       closeModal();
       await load();
     } catch (err) {
       msg(TimeGridApi.escapeHtml(err.message), 'error');
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText || '登録';
+      }
     }
   };
   load();
