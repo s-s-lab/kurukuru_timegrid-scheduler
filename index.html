@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TimeGrid Scheduler</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="header"><div class="container nav"><a class="logo" href="index.html">TimeGrid Scheduler</a><div class="nav-links"><a class="btn secondary small" href="create.html">日程調整を作成する</a></div></div></header>
+<main>
+  <section class="hero"><div class="container hero-grid">
+    <div><h1>時間帯をなぞって決める、シンプルな日程調整。</h1><p class="lead">候補日を作り、URLを共有し、参加者がタイムライン上で ◎ / ○ / △ / × を入力できます。回答が入ると主催者にメール通知します。</p><div class="actions"><a class="btn" href="create.html">日程調整を作成する</a></div></div>
+    <div class="card"><h2>使い方</h2><ol><li>主催者がイベント名・候補日・候補時間を登録</li><li>発行されたURLを参加者へ共有</li><li>参加者はマークを選び、時間帯をクリック・ドラッグして回答</li><li>回答一覧と集計をブラウザで確認</li></ol><p class="help">作成済みイベントは、共有された <code>event.html?id=...</code> のURLから利用します。</p></div>
+  </div></section>
+  <section class="container grid two">
+    <div class="card"><h3>視覚的なタイムライン入力</h3><p>30分単位のセルをクリックまたはドラッグして、候補時間・出欠可否をまとめて入力できます。</p></div>
+    <div class="card"><h3>回答通知つき</h3><p>参加者が新規回答・回答更新を行うと、主催者メールアドレスへ自動通知します。</p></div>
+  </section>
+</main>
+<footer class="footer"><div class="container">TimeGrid Scheduler MVP</div></footer>
+</body>
+</html>
