@@ -132,6 +132,13 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('resetBtn').onclick = () => { selectedSlots.clear(); selectedDates.forEach(d => selectedSlots.set(d, new Set())); renderTimelines(); };
   document.getElementById('createForm').onsubmit = async e => {
     e.preventDefault();
+    const form = e.currentTarget;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn ? submitBtn.textContent : '';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = '登録中...';
+    }
     try {
       const candidates = collectCandidates();
       if (candidates.length === 0) throw new Error('候補時間を1つ以上選択してください。');
@@ -146,6 +153,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await TimeGridApi.post('createEvent', payload);
       const url = `${window.TIMEGRID_CONFIG.FRONTEND_BASE_URL}/event.html?id=${encodeURIComponent(data.eventId)}`;
       msg(`作成しました。<br><input value="${url}" readonly onclick="this.select()"><p><a class="btn" href="${url}">回答画面を開く</a></p>`);
-    } catch (err) { msg(TimeGridApi.escapeHtml(err.message), 'error'); }
+    } catch (err) {
+      msg(TimeGridApi.escapeHtml(err.message), 'error');
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText || '登録';
+      }
+    }
   };
 });
