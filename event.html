@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>回答 | TimeGrid Scheduler</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="event-page">
+  <header class="header compact-header">
+    <div class="container nav compact-nav">
+      <a class="logo" href="index.html">TimeGrid Scheduler</a>
+      <div class="nav-links"><a id="adminLink" href="#">管理画面</a></div>
+    </div>
+  </header>
+
+  <main class="container compact-event-main">
+    <div id="message"></div>
+
+    <div class="event-top-grid">
+      <section id="eventArea" class="event-info-box"></section>
+      <aside class="event-action-box">
+        <button class="btn event-add-btn" id="openModalBtn" type="button">＋ あなたの予定を追加する</button>
+        <p class="help compact-note">参加者の方は、こちらから予定を追加してください。</p>
+      </aside>
+    </div>
+
+    <section class="tonton-like-section" id="commentsSection">
+      <h2 class="bar-title">みんなのコメント</h2>
+      <div id="commentsArea" class="bar-body"></div>
+    </section>
+
+    <section class="tonton-like-section" id="responsesSection">
+      <h2 class="bar-title">みんなの予定</h2>
+      <div class="bar-body">
+        <p class="compact-note">主催者が設定した日付と時間です。参加者の方は「あなたの予定を追加する」から予定を入力してください。</p>
+        <div id="responsesArea"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="responseModal" class="modal-backdrop">
+    <div class="modal modal-wide event-response-modal">
+      <div class="modal-heading">
+        <h2>あなたの予定を追加する</h2>
+        <button class="btn secondary small" id="closeModalBtn" type="button">閉じる</button>
+      </div>
+
+      <form id="responseForm">
+        <input type="hidden" id="responseId">
+
+        <div class="response-form-compact">
+          <div class="response-left">
+            <div class="inline-row compact-line">
+              <label for="name">ニックネーム</label>
+              <input id="name" required maxlength="60">
+            </div>
+            <div class="inline-row compact-line">
+              <label for="editPassword">パスワード</label>
+              <input id="editPassword" type="password" required minlength="4">
+            </div>
+          </div>
+          <div class="response-right">
+            <label for="comment">コメント</label>
+            <textarea id="comment" rows="3"></textarea>
+          </div>
+        </div>
+
+        <div class="mark-line">
+          <span class="mark-line-label">利用マーク：</span>
+          <div id="markPicker" class="mark-picker-inline"></div>
+        </div>
+
+        <p class="compact-note">マークを選び、候補時間をクリックまたはドラッグすると予定を入力できます。未入力セルは空欄のまま保存します。</p>
+        <div id="answerTimeline" class="answer-time-table-wrap"></div>
+
+        <div class="modal-actions-bottom">
+          <button class="btn secondary" type="button" id="cancelModalBtn">閉じる</button>
+          <button class="btn event-add-btn" type="submit">登録</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/event.js"></script>
+</body>
+</html>
